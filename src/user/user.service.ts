@@ -18,15 +18,19 @@ import {
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { GroupService } from 'src/group/group.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly groupService: GroupService,
     private readonly jwtService: JwtService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
+    // const defaultGroupId = 0;
+    // const group = await this.groupService.
     const oldUser = await this.getUserByEmail(createUserDto.email);
     if (oldUser) {
       throw new BadRequestException(USER_ALREADY_EXIST_ERROR);

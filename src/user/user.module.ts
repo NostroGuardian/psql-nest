@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { getJWTConfig } from 'src/configs/jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { GroupModule } from 'src/group/group.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PassportModule } from '@nestjs/passport';
       useFactory: getJWTConfig,
     }),
     PassportModule,
+    GroupModule,
   ],
   providers: [UserService, JwtStrategy],
   controllers: [UserController],

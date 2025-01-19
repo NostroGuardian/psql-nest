@@ -1,7 +1,10 @@
+import { Group } from 'src/group/group.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -19,6 +22,10 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @ManyToOne(() => Group, (group) => group.id)
+  @JoinColumn()
+  group: Group;
+
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: Date;
 }
