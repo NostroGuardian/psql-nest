@@ -6,11 +6,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Request,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { GroupService } from './group.service';
+import { AdminsOnlyGuard } from 'src/user/guards/admins-only.guard';
+import { JwtAuthGuard } from 'src/user/guards/jwt.guard';
 
 @Controller('group')
 export class GroupController {
@@ -22,8 +26,10 @@ export class GroupController {
     return this.groupService.createGroup(createGroupDto);
   }
 
+  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
   @Get()
-  getAll() {
+  getAll(@Request() req) {
+    console.log(req);
     return this.groupService.getAllGroups();
   }
 
