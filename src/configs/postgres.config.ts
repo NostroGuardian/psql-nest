@@ -11,7 +11,7 @@ export const getPostgresConfig = async (
     username: configService.get('POSTGRES_USER'),
     password: configService.get('POSTGRES_PASSWORD'),
     database: configService.get('POSTGRES_DB'),
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    entities: [process.cwd() + '/dist/**/*.entity.js'],
     synchronize: configService.get('DEVELOPER_MODE'),
   };
 };
