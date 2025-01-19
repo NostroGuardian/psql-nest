@@ -33,7 +33,7 @@ export class UserController {
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto) {
     const user = await this.userService.validateUser(loginUserDto);
-    return this.userService.loginUser(user.name, user.email);
+    return this.userService.loginUser(user.name, user.email, user.role);
   }
 
   @UseGuards(JwtAuthGuard)

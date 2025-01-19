@@ -23,7 +23,7 @@ export class User {
   passwordHash: string;
 
   @ManyToOne(() => Group, (group) => group.id)
-  @JoinColumn()
+  @JoinColumn({ name: 'group' })
   group: Group;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

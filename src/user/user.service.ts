@@ -29,8 +29,8 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    // const defaultGroupId = 0;
-    // const group = await this.groupService.
+    const defaultGroupId = 1;
+    const group = await this.groupService.getGroupById(defaultGroupId);
     const oldUser = await this.getUserByEmail(createUserDto.email);
     if (oldUser) {
       throw new BadRequestException(USER_ALREADY_EXIST_ERROR);
@@ -39,6 +39,7 @@ export class UserService {
     const newUser = this.userRepository.create({
       name: createUserDto.name,
       email: createUserDto.email,
+      group: group,
       passwordHash: await hash(createUserDto.password, salt),
     });
     return this.userRepository.save(newUser);
@@ -46,6 +47,9 @@ export class UserService {
 
   async validateUser(loginUserDto: LoginUserDto) {
     const user = await this.getUserByEmail(loginUserDto.email);
+    if (!user) {
+      throw new NotFoundException(USER_NOT_FOUND_EMAIL_ERROR);
+    }
     const isCorrectPassword = await compare(
       loginUserDto.password,
       user.passwordHash,
@@ -53,22 +57,25 @@ export class UserService {
     if (!isCorrectPassword) {
       throw new UnauthorizedException(USER_WRONG_PASSWORD_ERROR);
     }
-    return { name: user.name, email: user.email };
+    return { name: user.name, email: user.email, role: user.group.alias };
   }
 
-  async loginUser(name: string, email: string) {
-    const payload = { name, email };
+  async loginUser(name: string, email: string, role: string) {
+    const payload = { name, email, role };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async getAllUsers(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.userRepository.find({ relations: ['group'] });
   }
 
   async getUserById(id: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['group'],
+    });
     if (!user) {
       throw new NotFoundException(USER_NOT_FOUND_ERROR);
     }
@@ -76,11 +83,7 @@ export class UserService {
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
-    if (!user) {
-      throw new NotFoundException(USER_NOT_FOUND_EMAIL_ERROR);
-    }
-    return user;
+    return await this.userRepository.findOneBy({ email });
   }
 
   async updateUserById(
