@@ -17,6 +17,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { AdminsOnlyGuard } from './guards/admins-only.guard';
 
 @Controller('user')
 export class UserController {
@@ -49,7 +50,7 @@ export class UserController {
   }
 
   @UsePipes(new ValidationPipe())
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
   @Patch(':id')
   updateById(
     @Param('id', ParseIntPipe) id: number,
@@ -58,7 +59,7 @@ export class UserController {
     return this.userService.updateUserById(id, updateUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
   @Delete(':id')
   deleteById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteUserById(id);

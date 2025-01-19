@@ -20,24 +20,27 @@ import { JwtAuthGuard } from 'src/user/guards/jwt.guard';
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
+  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
   @UsePipes(new ValidationPipe())
   @Post('create')
   create(@Body() createGroupDto: CreateGroupDto) {
     return this.groupService.createGroup(createGroupDto);
   }
 
-  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   getAll(@Request() req) {
     console.log(req);
     return this.groupService.getAllGroups();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getById(@Param('id', ParseIntPipe) id: number) {
     return this.groupService.getGroupById(id);
   }
 
+  @UseGuards(JwtAuthGuard, AdminsOnlyGuard)
   @Delete(':id')
   deleteById(@Param('id', ParseIntPipe) id: number) {
     return this.groupService.deleteGroupById(id);
